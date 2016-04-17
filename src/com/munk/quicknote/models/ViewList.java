@@ -1,5 +1,9 @@
 package com.munk.quicknote.models;
 
+import com.munk.quicknote.listener.IQuickActionListener;
+import com.munk.quicknote.listener.NoteEvent;
+import com.sun.tools.javap.TypeAnnotationWriter;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -10,11 +14,16 @@ import java.util.List;
  */
 public class ViewList {
     private LinkedList<NoteItem> noteList= new LinkedList<>();
+    List<IQuickActionListener> viewListActionListeners = new ArrayList<>();
     public void add(String stringElement){
-        noteList.add(new NoteItem(new Date(), stringElement));
+        NoteItem item = new NoteItem(new Date(), stringElement);
+        noteList.add(item);
+        performActionOnListeners(item);
     }
+
     public void add(NoteItem item){
         noteList.add(item);
+        performActionOnListeners(item);
     }
 
     public List<NoteItem> getListToClear(String searchString){
@@ -44,6 +53,21 @@ public class ViewList {
             }
         }
         return false;
+    }
+
+    public List<NoteItem> getNoteList (){
+        return noteList;
+    }
+
+    public void addActionListener(IQuickActionListener actionListener){
+        viewListActionListeners.add(actionListener);
+    }
+
+    private void performActionOnListeners(NoteItem item){
+        NoteEvent event = new NoteEvent(item);
+        for (IQuickActionListener actionListener:viewListActionListeners){
+            actionListener.actionPerformed(event);
+        }
     }
 
 }

@@ -1,7 +1,10 @@
 package com.munk.quicknote.ui;
 
-import com.munk.quicknote.loader.Main;
+import com.munk.quicknote.listener.IQuickActionListener;
+import com.munk.quicknote.listener.IQuickEvent;
+import com.munk.quicknote.listener.NoteEvent;
 import com.munk.quicknote.models.NoteItem;
+import com.munk.quicknote.models.ViewList;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -12,15 +15,23 @@ import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
-import java.util.Date;
 
 /**
  * Created by kmayank on 3/27/16.
  */
 public class QuickNoteFrame extends JFrame {
-    public static DefaultListModel<NoteItem> listModel;
-    public QuickNoteFrame(){
-
+    private ViewList viewList;
+    private DefaultListModel<NoteItem> listModel;
+    private KeyAdapter jListKeyAdapter;
+    public QuickNoteFrame(ViewList viewList, IQuickActionListener actionListener){
+        this.viewList = viewList;
+        this.jListKeyAdapter = jListKeyAdapter;
+        viewList.addActionListener(new IQuickActionListener() {
+            @Override
+            public void actionPerformed(IQuickEvent e) {
+                listModel.add(0,e.getNoteItem());
+            }
+        });
         JPanel buttonPanel = new JPanel();
         setContentPane(buttonPanel);
 
@@ -29,40 +40,29 @@ public class QuickNoteFrame extends JFrame {
 
 
         JTextField field = new JTextField(30);
-        field.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //Main.filterListFromString(field.getText());
-                //System.out.println(field.getText());
-            }
-        });
         field.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                Main.filterListFromString(field.getText());
+                filterListFromString(field.getText());
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                Main.filterListFromString(field.getText());
+                filterListFromString(field.getText());
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                Main.filterListFromString(field.getText());
+                filterListFromString(field.getText());
             }
         });
         JButton note = new JButton("note");
         JButton clip = new JButton("clip");
         JButton all = new JButton("all");
-        listModel = new DefaultListModel();
-        listModel.addElement(new NoteItem(new Date(), "one"));
 
 
 
-
-
-
+        updateClipboardListModel(viewList);
         JList<NoteItem> stringList = new JList<>(listModel);
         stringList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane listScroller = new JScrollPane(stringList);
@@ -79,11 +79,10 @@ public class QuickNoteFrame extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode()==KeyEvent.VK_ENTER){
-                    copyToClipboard(stringList.getSelectedValue());
+                    actionListener.actionPerformed(new NoteEvent(stringList.getSelectedValue()));//TODO Pass selected NoteItem reference
                 }
             }
         });
-
 
 
         layout.setAutoCreateGaps(true);
@@ -111,15 +110,24 @@ public class QuickNoteFrame extends JFrame {
 
     }
 
-    public static void copyToClipboard(NoteItem item){
-        System.out.println(String.format("Copying \"%s\" to clipboard",item.getNoteContent()));
-        if(item!=null&&item.getNoteContent()!=null&&item.getNoteContent().trim().length()>0){
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(item.getNoteContent()), new ClipboardOwner() {
-                @Override
-                public void lostOwnership(Clipboard clipboard, Transferable contents) {
 
-                }
-            });
+
+    private void updateClipboardListModel(ViewList viewList){
+        if (listModel==null){listModel=new DefaultListModel<NoteItem>();}
+        else {listModel.removeAllElements();}
+        for (NoteItem item: viewList.getNoteList()){
+            listModel.add(0,item);
         }
     }
+
+    private boolean filterListFromString(String filterString){
+        listModel.removeAllElements();
+
+        for(NoteItem item:viewList.getFilteredList(filterString)){
+            listModel.add(0, item);
+        }
+        return true;
+    }
+
+
 }
