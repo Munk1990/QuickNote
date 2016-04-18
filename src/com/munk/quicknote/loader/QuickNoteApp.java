@@ -12,10 +12,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 /**
  * Created by kmayank on 4/17/16.
@@ -75,20 +72,24 @@ public class QuickNoteApp {
             @Override
             public void actionPerformed(ActionEvent e) {
                 initQuickFrame();
-                mainFrame.setVisible(true);
             }
         });
     }
 
     private void initQuickFrame(){
-
-        mainFrame = new QuickNoteFrame(guiViewList, new IQuickActionListener() {
-            @Override
-            public void actionPerformed(IQuickEvent e) {
-                clipboardDaemon.copyToClipboard(e.getNoteItem());
-            }
-        });
-
+        QuickNoteApp noteApp = this;
+        if (mainFrame==null) {
+            mainFrame = new QuickNoteFrame(guiViewList, new IQuickActionListener() {
+                @Override
+                public void actionPerformed(IQuickEvent e) {
+                    clipboardDaemon.copyToClipboard(e.getNoteItem());
+                    noteApp.mainFrame.setVisible(false);//todo: Best way to kill the app?
+                }
+            });
+            mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage("res/notes-512x512.png"));
+            mainFrame.setTitle("Quicknote");
+        }
+        mainFrame.setVisible(true);//Todo: Find a way to bring the app to foreground, not working on Mac
     }
 
 

@@ -23,9 +23,9 @@ public class QuickNoteFrame extends JFrame {
     private ViewList viewList;
     private DefaultListModel<NoteItem> listModel;
     private KeyAdapter jListKeyAdapter;
-    public QuickNoteFrame(ViewList viewList, IQuickActionListener actionListener){
+    public QuickNoteFrame(ViewList viewList, IQuickActionListener returnKeyListener){
+        this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         this.viewList = viewList;
-        this.jListKeyAdapter = jListKeyAdapter;
         viewList.addActionListener(new IQuickActionListener() {
             @Override
             public void actionPerformed(IQuickEvent e) {
@@ -72,6 +72,7 @@ public class QuickNoteFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 stringList.requestFocusInWindow();
+                stringList.setSelectedIndex(0);
             }
         });
 
@@ -79,7 +80,7 @@ public class QuickNoteFrame extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode()==KeyEvent.VK_ENTER){
-                    actionListener.actionPerformed(new NoteEvent(stringList.getSelectedValue()));//TODO Pass selected NoteItem reference
+                    returnKeyListener.actionPerformed(new NoteEvent(stringList.getSelectedValue()));//TODO Pass selected NoteItem reference
                 }
             }
         });
