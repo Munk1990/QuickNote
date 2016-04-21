@@ -20,11 +20,15 @@ import java.awt.event.*;
  * Created by kmayank on 3/27/16.
  */
 public class QuickNoteFrame extends JFrame {
+    public static final int HEIGHT = 500;
+    public static final int WIDTH = 500;
+
     private ViewList viewList;
     private DefaultListModel<NoteItem> listModel;
     private KeyAdapter jListKeyAdapter;
+
     public QuickNoteFrame(ViewList viewList, IQuickActionListener returnKeyListener){
-        this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.viewList = viewList;
         viewList.addActionListener(new IQuickActionListener() {
             @Override
@@ -65,7 +69,31 @@ public class QuickNoteFrame extends JFrame {
         updateClipboardListModel(viewList);
         JList<NoteItem> stringList = new JList<>(listModel);
         stringList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        stringList.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(e.getKeyCode()==KeyEvent.VK_ENTER){
+                    returnKeyListener.actionPerformed(new NoteEvent(stringList.getSelectedValue()));//TODO Pass selected NoteItem reference
+                }
+            }
+        });
+        for (char c = 'a';c < 'z'; c++){
+            stringList.getInputMap().put(KeyStroke.getKeyStroke(c), c);
+            stringList.getActionMap().put(c, new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    //Todo: When setting single character, it remains selected
+                    field.setText(e.getActionCommand()+"<Continue typing your query>");
+                    field.grabFocus();
+                    field.setCaretPosition(1);
+                    int end = field.getColumns();
+                    field.setSelectionStart(1);
+                    field.setSelectionEnd(end);
+                }
+            });
+        }
         JScrollPane listScroller = new JScrollPane(stringList);
+        listScroller.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
         field.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "Downkey");
         field.getActionMap().put("Downkey",new AbstractAction(){
@@ -76,14 +104,6 @@ public class QuickNoteFrame extends JFrame {
             }
         });
 
-        stringList.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if(e.getKeyCode()==KeyEvent.VK_ENTER){
-                    returnKeyListener.actionPerformed(new NoteEvent(stringList.getSelectedValue()));//TODO Pass selected NoteItem reference
-                }
-            }
-        });
 
 
         layout.setAutoCreateGaps(true);
@@ -108,7 +128,6 @@ public class QuickNoteFrame extends JFrame {
                         .addComponent(listScroller)
         );
         pack();
-
     }
 
 

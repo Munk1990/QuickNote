@@ -65,8 +65,6 @@ public class QuickClipboardDaemon implements IEventListener, Runnable {
     public void copyToClipboard(NoteItem item){
         System.out.println(String.format("Copying \"%s\" to clipboard", item.getNoteContent()));
         if(item!=null&&item.getNoteContent()!=null&&item.getNoteContent().trim().length()>0){
-            pastData=item.getNoteContent();
-            curData=item.getNoteContent();
             Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(item.getNoteContent()), new ClipboardOwner() {
                 @Override
                 public void lostOwnership(Clipboard clipboard, Transferable contents) {

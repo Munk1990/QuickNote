@@ -5,6 +5,7 @@ import com.munk.quicknote.listener.IQuickEvent;
 import com.munk.quicknote.listener.QuickClipboardDaemon;
 import com.munk.quicknote.models.NoteItem;
 import com.munk.quicknote.models.ViewList;
+import com.munk.quicknote.persistence.FileWriter;
 import com.munk.quicknote.ui.QuickNoteFrame;
 
 import java.awt.*;
@@ -13,21 +14,29 @@ import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
+import java.io.IOException;
 
 /**
  * Created by kmayank on 4/17/16.
  */
 public class QuickNoteApp {
+    private static final String FILENAME = "Quicknote.save";
+    private static final String FILEPATH = System.getProperty("user.home")+"/"+FILENAME;
     QuickNoteFrame mainFrame;
     QuickClipboardDaemon clipboardDaemon;
     ViewList guiViewList;
     public static void main (String [] xargs){
+        System.out.println(FILEPATH);
         QuickNoteApp noteApp = new QuickNoteApp();
         noteApp.initiateApp();
     }
 
     public void initiateApp(){
-        guiViewList= new ViewList();
+        try {
+            guiViewList= FileWriter.getViewListFromFile(FILEPATH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         initDaemon();
         initQuickFrame();
         setupTrayIcon();
@@ -38,7 +47,14 @@ public class QuickNoteApp {
         clipboardDaemon.addActionListener(new IQuickActionListener() {
             @Override
             public void actionPerformed(IQuickEvent e) {
-                guiViewList.add(e.getNoteItem());
+                if (!guiViewList.hasItemWithString(e.getNoteItem().getNoteContent())) {
+                    guiViewList.add(e.getNoteItem());
+                    try {
+                        FileWriter.saveViewListToFile(FILEPATH, guiViewList);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
             }
         });
         clipboardDaemon.startListening();
@@ -65,6 +81,11 @@ public class QuickNoteApp {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //isRunning=false;
+                try {
+                    FileWriter.saveViewListToFile(FILEPATH,guiViewList);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
                 System.exit(0);//bad method of exit
             }
         });

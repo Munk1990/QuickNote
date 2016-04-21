@@ -1,6 +1,8 @@
 package com.munk.quicknote.models;
 
 import com.sun.tools.javap.TypeAnnotationWriter;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.Date;
 
@@ -8,9 +10,12 @@ import java.util.Date;
  * Created by kmayank on 3/27/16.
  */
 public class NoteItem implements Comparable<NoteItem> {
+    @JsonProperty
     private Date creationDate;
+    @JsonProperty
     private String noteContent;
 
+    public NoteItem(){}
     public NoteItem(Date creationDate, String content){
         this.creationDate=creationDate;
         this.noteContent=content;
@@ -42,6 +47,7 @@ public class NoteItem implements Comparable<NoteItem> {
         return noteContent.toLowerCase().contains(text.toLowerCase());
     }
 
+    @JsonIgnore
     public String getOneLinePreview(){
         return noteContent.replace("[\n\r]","");
     }
