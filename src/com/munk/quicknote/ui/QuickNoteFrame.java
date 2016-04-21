@@ -27,6 +27,8 @@ public class QuickNoteFrame extends JFrame {
     private DefaultListModel<NoteItem> listModel;
     private KeyAdapter jListKeyAdapter;
 
+
+    private IQuickActionListener addToListButtonListener;
     public QuickNoteFrame(ViewList viewList, IQuickActionListener returnKeyListener){
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.viewList = viewList;
@@ -43,27 +45,39 @@ public class QuickNoteFrame extends JFrame {
         getContentPane().setLayout(layout);
 
 
-        JTextField field = new JTextField(30);
-        field.getDocument().addDocumentListener(new DocumentListener() {
+        JTextArea textArea = new JTextArea(5,30);
+        textArea.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                filterListFromString(field.getText());
+                filterListFromString(textArea.getText());
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                filterListFromString(field.getText());
+                filterListFromString(textArea.getText());
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                filterListFromString(field.getText());
+                filterListFromString(textArea.getText());
             }
         });
         JButton note = new JButton("note");
         JButton clip = new JButton("clip");
         JButton all = new JButton("all");
+        JButton addToList = new JButton("Add as note");
+        addToList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (textArea.getText().trim().length() > 0) {
+                    addToListButtonListener.actionPerformed(new NoteEvent(textArea.getText()));
+                    textArea.selectAll();
+                    textArea.grabFocus();
+                }
+            }
+        });
 
+        JScrollPane inputTextPane = new JScrollPane(textArea);
 
 
         updateClipboardListModel(viewList);
@@ -74,6 +88,10 @@ public class QuickNoteFrame extends JFrame {
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode()==KeyEvent.VK_ENTER){
                     returnKeyListener.actionPerformed(new NoteEvent(stringList.getSelectedValue()));//TODO Pass selected NoteItem reference
+                } else if (e.getKeyCode()==8) {
+                    System.out.println("deleting..");
+                    viewList.remove(stringList.getSelectedValue());
+                    listModel.removeElement(stringList.getSelectedValue());
                 }
             }
         });
@@ -83,20 +101,20 @@ public class QuickNoteFrame extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     //Todo: When setting single character, it remains selected
-                    field.setText(e.getActionCommand()+"<Continue typing your query>");
-                    field.grabFocus();
-                    field.setCaretPosition(1);
-                    int end = field.getColumns();
-                    field.setSelectionStart(1);
-                    field.setSelectionEnd(end);
+                    textArea.setText(e.getActionCommand()+"<Continue typing your query>");
+                    textArea.grabFocus();
+                    textArea.setCaretPosition(1);
+                    int end = textArea.getColumns();
+                    textArea.setSelectionStart(1);
+                    textArea.setSelectionEnd(end);
                 }
             });
         }
         JScrollPane listScroller = new JScrollPane(stringList);
         listScroller.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
-        field.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "Downkey");
-        field.getActionMap().put("Downkey",new AbstractAction(){
+        textArea.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "Downkey");
+        textArea.getActionMap().put("Downkey",new AbstractAction(){
             @Override
             public void actionPerformed(ActionEvent e) {
                 stringList.requestFocusInWindow();
@@ -111,7 +129,8 @@ public class QuickNoteFrame extends JFrame {
 
         layout.setHorizontalGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                                .addComponent(field)
+                                .addComponent(textArea)
+                                .addComponent(addToList)
                                 .addGroup(layout.createSequentialGroup()
                                         .addComponent(note)
                                         .addComponent(clip)
@@ -120,7 +139,8 @@ public class QuickNoteFrame extends JFrame {
         );
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-                        .addComponent(field)
+                        .addComponent(textArea)
+                        .addComponent(addToList)
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                 .addComponent(note)
                                 .addComponent(clip)
@@ -130,6 +150,9 @@ public class QuickNoteFrame extends JFrame {
         pack();
     }
 
+    public void setNoteAddButtonListener(IQuickActionListener addToListButtonListener){
+        this.addToListButtonListener = addToListButtonListener;
+    }
 
 
     private void updateClipboardListModel(ViewList viewList){

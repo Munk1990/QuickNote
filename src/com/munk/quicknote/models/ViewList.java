@@ -2,6 +2,7 @@ package com.munk.quicknote.models;
 
 import com.munk.quicknote.listener.IQuickActionListener;
 import com.munk.quicknote.listener.NoteEvent;
+import com.sun.tools.javap.TypeAnnotationWriter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +25,10 @@ public class ViewList {
     public void add(NoteItem item){
         noteList.add(item);
         performActionOnListeners(item);
+    }
+
+    public void remove(NoteItem item){
+        noteList.remove(item);
     }
 
     public List<NoteItem> getListToClear(String searchString){

@@ -107,6 +107,12 @@ public class QuickNoteApp {
                     noteApp.mainFrame.setVisible(false);//todo: Best way to kill the app?
                 }
             });
+            mainFrame.setNoteAddButtonListener(new IQuickActionListener() {
+                @Override
+                public void actionPerformed(IQuickEvent e) {
+                    guiViewList.add(e.getNoteItem());
+                }
+            });
             mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage("res/notes-512x512.png"));
             mainFrame.setTitle("Quicknote");
         }
