@@ -78,6 +78,8 @@ public class QuickNoteFrame extends JFrame {
         });
 
         JScrollPane inputTextPane = new JScrollPane(textArea);
+        inputTextPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        inputTextPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 
         updateClipboardListModel(viewList);
@@ -129,7 +131,7 @@ public class QuickNoteFrame extends JFrame {
 
         layout.setHorizontalGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                                .addComponent(textArea)
+                                .addComponent(inputTextPane)
                                 .addComponent(addToList)
                                 .addGroup(layout.createSequentialGroup()
                                         .addComponent(note)
@@ -139,7 +141,7 @@ public class QuickNoteFrame extends JFrame {
         );
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-                        .addComponent(textArea)
+                        .addComponent(inputTextPane)
                         .addComponent(addToList)
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                 .addComponent(note)
