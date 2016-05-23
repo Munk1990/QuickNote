@@ -62,10 +62,10 @@ public class QuickClipboardDaemon implements IEventListener, Runnable {
     }
 
 
-    public void copyToClipboard(NoteItem item){
-        System.out.println(String.format("Copying \"%s\" to clipboard", item.getNoteContent()));
-        if(item!=null&&item.getNoteContent()!=null&&item.getNoteContent().trim().length()>0){
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(item.getNoteContent()), new ClipboardOwner() {
+    public void copyToClipboard(String noteString){
+        System.out.println(String.format("Copying \"%s\" to clipboard", noteString));
+        if(noteString!=null&&noteString.trim().length()>0){
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(noteString), new ClipboardOwner() {
                 @Override
                 public void lostOwnership(Clipboard clipboard, Transferable contents) {
 
@@ -75,7 +75,7 @@ public class QuickClipboardDaemon implements IEventListener, Runnable {
     }
 
     private void performActionOnListeners(String data){
-        IQuickEvent clipBoardEvent = new NoteEvent(data);
+        IQuickEvent clipBoardEvent = new NoteEvent(data,"clipboard");
         for (IQuickActionListener actionListener:actionListenerList){
             actionListener.actionPerformed(clipBoardEvent);
         }

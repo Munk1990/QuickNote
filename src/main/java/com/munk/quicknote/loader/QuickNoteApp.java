@@ -113,7 +113,7 @@ public class QuickNoteApp {
             mainFrame = new QuickNoteFrame(guiViewList, new IQuickActionListener() {
                 @Override
                 public void actionPerformed(IQuickEvent e) {
-                    clipboardDaemon.copyToClipboard(e.getNoteItem());
+                    clipboardDaemon.copyToClipboard(e.getNoteItem().toString());
                     noteApp.mainFrame.setVisible(false);//todo: Best way to kill the app?
                 }
             });

@@ -15,8 +15,8 @@ public class ViewList {
     private LinkedList<NoteItem> noteList= new LinkedList<>();
     List<IQuickActionListener> viewListActionListeners = new ArrayList<>();
 
-    public void add(String stringElement){
-        NoteItem item = new NoteItem(new Date(), stringElement);
+    public void add(String stringElement, String noteType){
+        NoteItem item = new NoteItem(new Date(), stringElement, noteType);
         noteList.add(item);
         performActionOnListeners(item);
     }

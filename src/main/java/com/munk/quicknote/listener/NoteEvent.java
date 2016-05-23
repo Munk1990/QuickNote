@@ -9,8 +9,8 @@ import java.util.Date;
  */
 public class NoteEvent implements IQuickEvent {
     NoteItem item;
-    public NoteEvent(String noteString){
-        item = new NoteItem(new Date(), noteString);
+    public NoteEvent(String noteString, String noteType){
+        item = new NoteItem(new Date(), noteString, noteType);
     }
     public NoteEvent(NoteItem item){
         this.item = item;

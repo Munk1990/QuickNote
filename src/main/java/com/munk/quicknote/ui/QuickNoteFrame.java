@@ -70,7 +70,7 @@ public class QuickNoteFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (textArea.getText().trim().length() > 0) {
-                    addToListButtonListener.actionPerformed(new NoteEvent(textArea.getText()));
+                    addToListButtonListener.actionPerformed(new NoteEvent(textArea.getText(),"notes"));
                     textArea.selectAll();
                     textArea.grabFocus();
                 }

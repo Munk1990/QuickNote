@@ -13,17 +13,19 @@ public class NoteItem implements Comparable<NoteItem> {
     private Date creationDate;
     @JsonProperty
     private String noteContent;
+    @JsonProperty
+    private String noteType;
 
     public NoteItem(){}
-    public NoteItem(Date creationDate, String content){
+    public NoteItem(Date creationDate, String content, String noteType){
         this.creationDate=creationDate;
         this.noteContent=content;
+        this.noteType=noteType;
     }
 
     public String getNoteContent() {
         return noteContent;
     }
-
     public void setNoteContent(String noteContent) {
         this.noteContent = noteContent;
     }
@@ -33,6 +35,13 @@ public class NoteItem implements Comparable<NoteItem> {
     }
     public Date getCreationDate(){
         return creationDate;
+    }
+
+    public String getNoteType(){
+        return noteType;
+    }
+    public void setNoteType(String noteType){
+        this.noteType=noteType;
     }
 
 
