@@ -18,6 +18,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 /**
  * Created by kmayank on 4/17/16.
@@ -71,7 +72,8 @@ public class QuickNoteApp {
 
 
     private void setupTrayIcon() throws IOException, URISyntaxException {
-        Image trayIconImage = ImageIO.read(new File(this.getClass().getResource(ICON_PATH).toURI()));
+        Image trayIconImage = ImageIO.read(this.getClass().getResource(ICON_PATH).toURI().toURL().openStream());
+
         TrayIcon item = new TrayIcon(trayIconImage);
         PopupMenu menu = new PopupMenu();
 
