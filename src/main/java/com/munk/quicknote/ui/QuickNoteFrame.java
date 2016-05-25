@@ -32,12 +32,6 @@ public class QuickNoteFrame extends JFrame {
     public QuickNoteFrame(ViewList viewList, IQuickActionListener returnKeyListener){
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.viewList = viewList;
-        viewList.addActionListener(new IQuickActionListener() {
-            @Override
-            public void actionPerformed(IQuickEvent e) {
-                listModel.add(0,e.getNoteItem());
-            }
-        });
         JPanel buttonPanel = new JPanel();
         setContentPane(buttonPanel);
 
@@ -121,6 +115,17 @@ public class QuickNoteFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 stringList.requestFocusInWindow();
                 stringList.setSelectedIndex(0);
+            }
+        });
+
+        viewList.addActionListener(new IQuickActionListener() {
+            @Override
+            public void actionPerformed(IQuickEvent e) {
+                if (textArea.getText().equals("")) {
+                    listModel.add(0, e.getNoteItem());
+                }else {
+                    filterListFromString(textArea.getText());
+                }
             }
         });
 

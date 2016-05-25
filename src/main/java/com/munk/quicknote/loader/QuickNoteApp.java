@@ -54,6 +54,7 @@ public class QuickNoteApp {
 
     private void initDaemon(){
         clipboardDaemon = new QuickClipboardDaemon();
+        //This action is invoked when the clipboard is updated with a new entry
         clipboardDaemon.addActionListener(new IQuickActionListener() {
             @Override
             public void actionPerformed(IQuickEvent e) {
