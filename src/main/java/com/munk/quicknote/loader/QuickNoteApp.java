@@ -24,7 +24,7 @@ import java.net.URL;
  * Created by kmayank on 4/17/16.
  */
 public class QuickNoteApp {
-    private static final String FILENAME = "Quicknote.save";
+    private static final String FILENAME = "Quicknotetest.save";
     private static final String FILEPATH = System.getProperty("user.home")+"/"+FILENAME;
     private static final String ICON_PATH = "/notes-512x512.png";
     QuickNoteFrame mainFrame;

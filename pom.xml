@@ -1,6 +1,6 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.munk.quicknote</groupId>
+    <groupId>com.munk.quicknote.desktop</groupId>
     <artifactId>quicknote</artifactId>
     <version>1</version>
     <build>

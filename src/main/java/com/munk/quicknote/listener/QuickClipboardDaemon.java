@@ -39,7 +39,7 @@ public class QuickClipboardDaemon implements IEventListener, Runnable {
                 curData = (String) Toolkit.getDefaultToolkit()
                         .getSystemClipboard().getData(DataFlavor.stringFlavor);
             } catch (UnsupportedFlavorException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }

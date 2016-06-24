@@ -3,10 +3,7 @@ package com.munk.quicknote.models;
 import com.munk.quicknote.listener.IQuickActionListener;
 import com.munk.quicknote.listener.NoteEvent;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by kmayank on 3/31/16.
@@ -28,6 +25,10 @@ public class ViewList {
 
     public void remove(NoteItem item){
         noteList.remove(item);
+    }
+
+    public void remove(NoteItem[] items){
+        noteList.removeAll(Arrays.asList(items));
     }
 
     public List<NoteItem> getListToClear(String searchString){

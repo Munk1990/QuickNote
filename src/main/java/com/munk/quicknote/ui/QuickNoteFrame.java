@@ -9,12 +9,14 @@ import com.munk.quicknote.models.ViewList;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
+import java.util.Date;
 
 /**
  * Created by kmayank on 3/27/16.
@@ -24,7 +26,8 @@ public class QuickNoteFrame extends JFrame {
     public static final int WIDTH = 500;
 
     private ViewList viewList;
-    private DefaultListModel<NoteItem> listModel;
+    private NoteTableModel noteTableModel;
+
     private KeyAdapter jListKeyAdapter;
 
 
@@ -64,7 +67,8 @@ public class QuickNoteFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (textArea.getText().trim().length() > 0) {
-                    addToListButtonListener.actionPerformed(new NoteEvent(textArea.getText(),"notes"));
+                    viewList.add(new NoteItem(new Date(), textArea.getText(),"notes"));
+                    //addToListButtonListener.actionPerformed(new NoteEvent(textArea.getText(),"notes"));
                     textArea.selectAll();
                     textArea.grabFocus();
                 }
@@ -77,17 +81,25 @@ public class QuickNoteFrame extends JFrame {
 
 
         updateClipboardListModel(viewList);
-        JList<NoteItem> stringList = new JList<>(listModel);
+        noteTableModel.addElement(new NoteItem(new Date(),"test","notes"),0);
+        noteTableModel.addElement(new NoteItem(new Date(),"test2","notes"),0);
+        JList<NoteItem> stringList = new JList<>();
+        JTable noteTable = new JTable(noteTableModel);
+        noteTable.setDefaultRenderer(Object.class, noteTableModel);
+        noteTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        noteTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         stringList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        stringList.addKeyListener(new KeyAdapter() {
+        noteTable.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode()==KeyEvent.VK_ENTER){
                     returnKeyListener.actionPerformed(new NoteEvent(stringList.getSelectedValue()));//TODO Pass selected NoteItem reference
                 } else if (e.getKeyCode()==8) {
                     System.out.println("deleting..");
-                    viewList.remove(stringList.getSelectedValue());
-                    listModel.removeElement(stringList.getSelectedValue());
+                    int [] selectedRows = noteTable.getSelectedRows();
+                    NoteItem [] selectedItems = noteTableModel.getItemsAt(selectedRows);
+                    viewList.remove(selectedItems);
+                    noteTableModel.removeElements(selectedItems);
                 }
             }
         });
@@ -106,7 +118,9 @@ public class QuickNoteFrame extends JFrame {
                 }
             });
         }
-        JScrollPane listScroller = new JScrollPane(stringList);
+        JScrollPane listScroller = new JScrollPane(noteTable);
+        //JScrollPane listScroller = new JScrollPane(stringList);
+
         listScroller.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
         textArea.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "Downkey");
@@ -122,7 +136,7 @@ public class QuickNoteFrame extends JFrame {
             @Override
             public void actionPerformed(IQuickEvent e) {
                 if (textArea.getText().equals("")) {
-                    listModel.add(0, e.getNoteItem());
+                    noteTableModel.addElement(e.getNoteItem(), 0);
                 }else {
                     filterListFromString(textArea.getText());
                 }
@@ -163,18 +177,19 @@ public class QuickNoteFrame extends JFrame {
 
 
     private void updateClipboardListModel(ViewList viewList){
-        if (listModel==null){listModel=new DefaultListModel<NoteItem>();}
-        else {listModel.removeAllElements();}
+        if (noteTableModel==null){noteTableModel=new NoteTableModel();}
+        else {
+            noteTableModel.removeAllElements();
+        }
         for (NoteItem item: viewList.getNoteList()){
-            listModel.add(0,item);
+            noteTableModel.addElement(item, 0);
         }
     }
 
     private boolean filterListFromString(String filterString){
-        listModel.removeAllElements();
-
+        noteTableModel.removeAllElements();
         for(NoteItem item:viewList.getFilteredList(filterString)){
-            listModel.add(0, item);
+            noteTableModel.addElement(item, 0);
         }
         return true;
     }
